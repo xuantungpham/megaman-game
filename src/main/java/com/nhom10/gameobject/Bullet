@@ -1,0 +1,24 @@
+package com.nhom10.gameobject;
+
+import java.avt.Graphics2D;
+
+public abstract class Bullet extends ParticularObject{
+    public Bullet(float x, float y, float Width, float height, float mass, int damage, GameWorld gameWorld){
+        super(x, y, width, height, mass, 1, gameWorld);
+        setDamage(damage); 
+    }
+
+    public abstract void draw(Graphisc2D g2d); //hình dang đạn
+
+    public void Update(){                      // tọa độ đạn thay đổi theo vận tốc
+        super.Update();
+        setPosX(getPosX() + getSpeedX());
+        setPosY(getPosY() + getSpeedY());
+/*        ParticularObject object = getGameWorld().particularObjectManager.getCollisionWidtEnemyObject(this);
+        if(object!=null && object.getState() == ALIVE){
+            setBlood(0);
+            object.beHurt(getDamage());
+            System.out.println("Bullet set behurt for enemy");
+/*            } 
+    }
+}
