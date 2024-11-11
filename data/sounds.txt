@@ -1,5 +1,4 @@
 5
-
 bluefireshooting data/bluefireshooting.wav
 redeyeshooting data/redeyeshooting.wav
 bgmusic data/bgmusic.wav

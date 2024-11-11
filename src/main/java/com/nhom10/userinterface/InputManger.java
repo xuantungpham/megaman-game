@@ -3,6 +3,7 @@ package com.nhom10.userinterface;
 import java.awt.event.KeyEvent;
 
 import com.nhom10.gameobject.GameWorld;
+import com.nhom10.gameobject.ParticularObject;
 
 public class InputManger {
 
@@ -20,11 +21,11 @@ public class InputManger {
                 gameWorld.megaman.dick();
                 break;
             case KeyEvent.VK_LEFT:
-                gameWorld.megaman.setDirection(gameWorld.megaman.LEFT_DIR);
+                gameWorld.megaman.setDirection(ParticularObject.LEFT_DIR);
                 gameWorld.megaman.run(); 
                 break;
             case KeyEvent.VK_RIGHT:
-                gameWorld.megaman.setDirection(gameWorld.megaman.RIGHT_DIR);
+                gameWorld.megaman.setDirection(ParticularObject.RIGHT_DIR);
                 gameWorld.megaman.run(); 
                 break;
             case KeyEvent.VK_ENTER:

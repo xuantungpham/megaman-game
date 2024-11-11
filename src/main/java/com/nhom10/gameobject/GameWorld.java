@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import javax.sound.sampled.Clip;
+
 import com.nhom10.effect.CacheDataLoader;
 import com.nhom10.effect.FrameImage;
 import com.nhom10.userinterface.GameFrame;
@@ -51,7 +53,7 @@ public class GameWorld {
     
     
     private int numberOfLife = 3;
-    
+    Clip bgMusic;
 
     public GameWorld(){
         texts1[0] = "We are heros, and our mission is protecting our Home\nEarth....";
@@ -72,6 +74,7 @@ public class GameWorld {
         particularObjectManager = new ParticularObjectManager(this);
         particularObjectManager.addObject(megaman);
         
+        bgMusic = CacheDataLoader.getInstance().getSound("bgmusic");
         initEnemies();
     }
 
@@ -240,7 +243,8 @@ public class GameWorld {
         
         switch(state){
             case PAUSEGAME:
-                
+                bgMusic.setFramePosition(0); // Đặt lại vị trí phát về đầu
+                bgMusic.loop(Clip.LOOP_CONTINUOUSLY);
                 break;
             case TUTORIAL:
                 TutorialUpdate();
@@ -285,7 +289,7 @@ public class GameWorld {
                 
                 break;
             case GAMEOVER:
-                
+                bgMusic.stop();
                 break;
             case GAMEWIN:
                 

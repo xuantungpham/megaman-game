@@ -4,15 +4,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-// import java.net.MalformedURLException;
-// import java.net.URL;
 import java.util.Hashtable;
-import java.util.Map;
-// import java.applet.Applet;
-// import java.applet.AudioClip;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class CacheDataLoader {
     private static CacheDataLoader instance;
@@ -21,11 +21,11 @@ public class CacheDataLoader {
     private String animationfile = "data/animation.txt";
     private String physmapfile = "data/phys_map.txt";
     private String backgroundmapfile = "data/background_map.txt";
-    // private String soundfile = "data/sounds.txt";
+    private String soundfile = "data/sounds.txt";
 
     private Hashtable<String, FrameImage> frameImages; 
     private Hashtable<String, Animation> animations;
-    // private Hashtable<String, AudioClip> sounds;
+    private Hashtable<String, Clip> sounds;
     private int[][] phys_map; 
     private int[][] background_map;
 
@@ -46,53 +46,65 @@ public class CacheDataLoader {
         LoadAnimation();
         LoadPhysMap();
         LoadBackgroundMap();
-        // LoadSounds();
+        LoadSounds();
     }
 
     public int[][] getPhysicalMap() {
         return instance.phys_map;
     }
-    // public void LoadSounds() throws IOException{
-    //     sounds = new Hashtable<String, AudioClip>();
+    public void LoadSounds() throws IOException {
+        sounds = new Hashtable<String, Clip>();
         
-    //     FileReader fr = new FileReader(soundfile);
-    //     BufferedReader br = new BufferedReader(fr);
+        // Đọc file cấu hình âm thanh
+        FileReader fr = new FileReader(soundfile);
+        BufferedReader br = new BufferedReader(fr);
         
-    //     String line = null;
+        String line = null;
         
-    //     if(br.readLine()==null) { // no line = "" or something like that
-    //         System.out.println("No data");
-    //         throw new IOException();
-    //     }
-    //     else {
+        // Kiểm tra xem file có dữ liệu không
+        if (br.readLine() == null) {
+            System.out.println("No data");
+            br.close();
+            throw new IOException();
+        } else {
+            // Đọc lại file
+            fr = new FileReader(soundfile);
+            br = new BufferedReader(fr);
             
-    //         fr = new FileReader(soundfile);
-    //         br = new BufferedReader(fr);
+            // Đọc số lượng âm thanh
+            while ((line = br.readLine()).equals("")) ;
+            int n = Integer.parseInt(line);
             
-    //         while((line = br.readLine()).equals(""));
-            
-    //         int n = Integer.parseInt(line);
-            
-    //         for(int i = 0;i < n; i ++){
+            for (int i = 0; i < n; i++) {
+                Clip clip = null;
                 
-    //             AudioClip audioClip = null;
-    //             while((line = br.readLine()).equals(""));
-
-    //             String[] str = line.split(" ");
-    //             String name = str[0];
+                // Đọc tên và đường dẫn của từng file âm thanh
+                while ((line = br.readLine()).equals("")) ;
+                String[] str = line.split(" ");
+                String name = str[0];
+                String path = str[1];
                 
-    //             String path = str[1];
-
-    //             try {
-    //                audioClip =  Applet.newAudioClip(new URL("file","",str[1]));
-
-    //             } catch (MalformedURLException ex) {}
+                try {
+                    // Đọc âm thanh từ file
+                    File audioFile = new File(path);
+                    AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+                    clip = AudioSystem.getClip();
+                    clip.open(audioStream);
+                    
+                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException ex) {
+                    System.out.println("Error loading sound file: " + path);
+                    ex.printStackTrace();
+                }
                 
-    //             instance.sounds.put(name, audioClip);
-    //         }
-            
-    //     }
-    // }
+                if (clip != null) {
+                    sounds.put(name, clip); // Lưu vào Hashtable
+                }
+            }
+        }
+        
+        br.close();
+    }
+
     public void LoadPhysMap() throws IOException {
         FileReader fr = new FileReader(physmapfile);
         BufferedReader br = new BufferedReader(fr);
@@ -243,6 +255,22 @@ public class CacheDataLoader {
         
         br.close();
     }
+
+    public Clip getSound(String name) {
+        Clip clip = null;
+        if (instance != null && instance.sounds != null) {
+            clip = instance.sounds.get(name);  // Lấy Clip từ bảng sounds
+            if (clip != null) {
+                return clip;  // Nếu tìm thấy âm thanh với tên đó, trả về Clip
+            } else {
+                System.out.println("Sound with name '" + name + "' not found.");
+            }
+        } else {
+            System.out.println("Instance or sounds map is null.");
+        }
+        return null;
+    }
+    
 
     public Animation getAnimation(String name){
         Animation animation = null;

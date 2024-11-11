@@ -3,6 +3,8 @@ package com.nhom10.gameobject;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import javax.sound.sampled.Clip;
+
 import com.nhom10.effect.Animation;
 import com.nhom10.effect.CacheDataLoader;
 
@@ -11,6 +13,7 @@ public class RedEyeDevil extends ParticularObject {
     private Animation forwarAnim, backAnim;
 
     private long startTimeToShoot;
+    Clip shooting;
 
     public RedEyeDevil(float x, float y, GameWorld gameWorld) {
         super(x, y, 127, 89, 0, 100, gameWorld);
@@ -20,10 +23,13 @@ public class RedEyeDevil extends ParticularObject {
         startTimeToShoot = 0;
         setDamage(10);
         setTimeForNoBehurt(3000*10000000);
+        shooting = CacheDataLoader.getInstance().getSound("redeyeshooting");
     }
 
     @Override 
     public void attack() {
+        shooting.setFramePosition(0);
+        shooting.start();
         Bullet bullet = new RedEyeBullet(getPosX(), getPosY(), getGameWorld());
         if (getDirection() == LEFT_DIR) {
             bullet.setSpeedX((-8));

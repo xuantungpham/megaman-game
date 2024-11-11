@@ -2,10 +2,9 @@ package com.nhom10.gameobject;
 
 import com.nhom10.effect.Animation;
 import com.nhom10.effect.CacheDataLoader;
-// import java.applet.AudioClip;
+import javax.sound.sampled.*;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.io.IOException;
 
 public class Megaman extends Human {
 
@@ -22,26 +21,18 @@ public class Megaman extends Human {
     private long lastShootingTime;
     private boolean isShooting = false;
     
-    // private AudioClip hurtingSound;
-    // private AudioClip shooting1;
+    private Clip hurtingSound;
+    private Clip shooting1;
     
     public Megaman(float x, float y, GameWorld gameWorld) {
         super(x, y, 70, 90, 0.1f, 100, gameWorld);
         
-        // shooting1 = CacheDataLoader.getInstance().getSound("bluefireshooting");
-        // hurtingSound = CacheDataLoader.getInstance().getSound("megamanhurt");
+        shooting1 = CacheDataLoader.getInstance().getSound("bluefireshooting");
+        hurtingSound = CacheDataLoader.getInstance().getSound("megamanhurt");
         
         setTeamType(LEAGUE_TEAM);
 
         setTimeForNoBehurt(2000*1000000);
-        try {
-            // Đoạn mã có khả năng ném ra IOException
-            CacheDataLoader.getInstance().LoadData();
-        } catch (IOException e) {
-            // Xử lý ngoại lệ, in lỗi hoặc thực hiện các hành động khác
-            System.out.println("no load data");
-            e.printStackTrace();
-        }
         runForwardAnim = CacheDataLoader.getInstance().getAnimation("run");
         if (runForwardAnim == null) System.out.println("runForwardAnim is null");
         runBackAnim = CacheDataLoader.getInstance().getAnimation("run");
@@ -316,7 +307,8 @@ public class Megaman extends Human {
     
         if(!isShooting && !getIsDicking()){
             
-            // shooting1.play();
+            shooting1.setFramePosition(0);
+            shooting1.start();
             
             Bullet bullet = new BlueFire(getPosX(), getPosY(), getGameWorld());
             if(getDirection() == LEFT_DIR) {
@@ -349,7 +341,8 @@ public class Megaman extends Human {
     @Override
     public void hurtingCallback(){
         System.out.println("Call back hurting");
-        // hurtingSound.play();
+        hurtingSound.setFramePosition(0);
+        hurtingSound.start();
     }
 
 }

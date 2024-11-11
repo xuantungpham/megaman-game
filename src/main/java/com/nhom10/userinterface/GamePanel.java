@@ -5,7 +5,6 @@ import javax.swing.*;
 import com.nhom10.gameobject.GameWorld;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
