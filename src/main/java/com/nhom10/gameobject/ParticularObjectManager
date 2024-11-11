@@ -1,0 +1,68 @@
+package com.nhom10.gameobject;
+
+import java.awt.Graphics2D;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+public class ParticularObjectMnager {   //quản lý các objectc trong game bằng cách đưa vào list
+    Protected List<ParticularObject> particularObject;
+    
+    Private GameWorld gameWorld;
+    
+    public ParticularObjectManager(GameWorld gameWorld){ //khởi tạo
+        particularObject = Collections.synchronizedList(new LinkedList<ParticularObject>()); // đồng bộ hóa list bằng SynchronizedList vd đạn của quái và nhân vật bắn cùng lúc sẽ xung đột tài nguyên
+        this.gameWorld = gameWorld;
+        
+    }
+    public GameWorld getGameWorld(){
+        return gameWorld;
+    }
+    public void addObject(ParticularObject particularObject){   //thêm đối tượng
+        synchronized(particularObjects){
+            particularObjects.add(particularObject);
+        }
+    }
+    
+    public void RemoveObject(ParticularObject particularObject){ //xóa đối tượng
+        synchronized(particularObjects){
+            for(int id=0; id<particularObjects.size(); id++){
+                ParticularObject object = particularObjects.get(id);
+                if(object = particularObject)
+                    particularObjects.remove(id);
+            }
+        }
+    }
+    
+    pulic ParticularObject getCollisionWidthEnmyObject(ParticularObject object){  //trả về đối tượng có va chạm với đối tượng truyền vào
+        synchronized(particularObjects){
+            for(int id = 0; id<particularObjects.size(); id++){
+                ParticularObject objectInList = particularObjects.get(id);
+                if(object.getTeamType() != objectInList.getTeamType() &&
+                        object.getBoundForCollisionWithEnemy().intersects(objectInList.getBoundForCollisionWithEnemy())){
+                    return objectInList;
+                }
+            }
+        }
+        return null;
+    }
+    
+    public void UpdateObjects(){                   // update các đối tượng nằm trong view
+        synchronized(particularObjects){
+            for(int id = 0; id<particularObjects.size(); id++){     //duyệt qua từng phần tử
+                ParticularObject object = particularObjects.get(id);
+                if(!object.isObjectOutOfCameraView()) object.Update();
+                if(object.getState() == ParticularObject.DEATH){
+                    particularObjects.remove(id);
+                }
+            }
+        }
+    }
+    
+    public void draw(Graphics2D g2){
+        synchronized(particularObjects){
+            for(ParticularObject object:particularObjects)
+                if(!object.isObjectOutOfCameraView()) object.draw(g2);
+        }
+    }
+}
