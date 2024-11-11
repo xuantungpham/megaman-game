@@ -5,7 +5,7 @@ public abstract class GameObject {
     private float posY;// tọa độ vị trí của object trong không gian 2D
     private GameWorld gameWorld;
 
-    public GameObject(float posX, float posY, GameObject gameObject) {
+    public GameObject(float posX, float posY, GameWorld gameWorld) {
         this.posX = posX;
         this.posY = posY;
         this.gameWorld = gameWorld;

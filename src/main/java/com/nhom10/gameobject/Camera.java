@@ -26,10 +26,10 @@ public class Camera extends GameObject{
             Megaman mainCharacter = getGameWorld().megaman;
 
             if (mainCharacter.getPosX() - getPosX() > 400) {
-                setPosX(mainCharacter.getPosX - 400);
+                setPosX(mainCharacter.getPosX() - 400);
             }
             if (mainCharacter.getPosX() - getPosX() < 200) {
-                setPosX(mainCharacter.getPosX - 200);
+                setPosX(mainCharacter.getPosX() - 200);
             }
 
             if (mainCharacter.getPosY() - getPosY() > 400) {

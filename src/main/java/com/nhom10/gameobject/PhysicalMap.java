@@ -5,25 +5,20 @@ package com.nhom10.gameobject;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nhom10.gameobject;
 
-import com.nhom10.state.GameWorldState;
+// import com.nhom10.state.GameWorldState;
 import com.nhom10.effect.CacheDataLoader;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/**
- *
- * @author phamn
- */
 public class PhysicalMap extends GameObject{
 
     public int[][] phys_map;
     private int tileSize;
     
-    public PhysicalMap(float x, float y, GameWorldState gameWorld) {
-        super(x, y, gameWorld);
+    public PhysicalMap(float x, float y, GameWorld gameWorld) {
+        super(x, y, gameWorld); // gọi constructer của hàm mình kết thừa
         this.tileSize = 30;
         phys_map = CacheDataLoader.getInstance().getPhysicalMap();
     }
@@ -71,12 +66,12 @@ public class PhysicalMap extends GameObject{
         int posX2 = (rect.x + rect.width)/tileSize;
         posX2 += 2;
 
-        int posY = (rect.y + rect.height)/tileSize;
+        int posY1 = (rect.y + rect.height)/tileSize;
 
         if(posX1 < 0) posX1 = 0;
         
         if(posX2 >= phys_map[0].length) posX2 = phys_map[0].length - 1;
-        for(int y = posY; y < phys_map.length;y++){
+        for(int y = posY1; y < phys_map.length;y++){
             for(int x = posX1; x <= posX2; x++){
                 
                 if(phys_map[y][x] == 1){
@@ -90,8 +85,6 @@ public class PhysicalMap extends GameObject{
     }
     
     public Rectangle haveCollisionWithRightWall(Rectangle rect){
-   
-        
         int posY1 = rect.y/tileSize;
         posY1-=2;
         int posY2 = (rect.y + rect.height)/tileSize;
@@ -118,10 +111,7 @@ public class PhysicalMap extends GameObject{
         
     }
     
-    public Rectangle haveCollisionWithLeftWall(Rectangle rect){
-        
-   
-        
+    public Rectangle haveCollisionWithLeftWall(Rectangle rect){     
         int posY1 = rect.y/tileSize;
         posY1-=2;
         int posY2 = (rect.y + rect.height)/tileSize;
@@ -157,6 +147,7 @@ public class PhysicalMap extends GameObject{
             for(int j = 0;j<phys_map[0].length;j++)
                 if(phys_map[i][j]!=0) g2.fillRect((int) getPosX() + j*tileSize - (int) camera.getPosX(), 
                         (int) getPosY() + i*tileSize - (int) camera.getPosY(), tileSize, tileSize);
+                
         
     }
     

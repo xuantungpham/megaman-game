@@ -1,64 +1,66 @@
 package com.nhom10.userinterface;
 
 import javax.swing.*;
-import java.awt.*;
+
+import com.nhom10.gameobject.GameWorld;
+
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
-    private Thread thread;
-    private boolean isrunning;
-    private InputManger inputManger;
-    BufferedImage image;
-    BufferedImage subImage;
-
+    
+    GameWorld gameWorld;
+    InputManger inputManger;
+    Thread gameThread;
+    
+    public boolean isRunning = true;
 
     public GamePanel() {
-        inputManger = new InputManger();
-
-
-    }
-    @Override
-    public void paint(Graphics g) {
-        g.setColor(Color.white);
-        g.fillRect(0, 0, GameFrame.SCRREN_WIDTH, GameFrame.SCRREN_HEIGHT);
+        gameWorld = new GameWorld();
+        inputManger = new InputManger(gameWorld);
     }
 
     public void StartGame() {
-        if (thread == null) {
-            isrunning = true;
-            thread = new Thread(this);
-            thread.start();
-        }
+        gameThread = new Thread(this);
+        gameThread.start();
     }
     @Override
     public void run() {
-        long FPS = 80;
-        long period = 1000*1000000 / FPS;
-        long beginTime = System.nanoTime();
+        long previousTime = System.nanoTime();
+        long currentTime;
         long sleepTime;
-        while (isrunning) {
-            // Update game
-            // Render game
+        long period = 1000000000/80;
+        while (isRunning) {
+            gameWorld.Update();
+            gameWorld.Render();
+            repaint();
 
-            long detalTime = System.nanoTime() - beginTime;
-            sleepTime = period - detalTime;
+            currentTime = System.nanoTime();
+            sleepTime = period - (currentTime - previousTime);
+
             try {
                 if (sleepTime > 0) {
                     Thread.sleep(sleepTime/1000000);
                 }
                 else Thread.sleep(period/2000000);
-            } catch (InterruptedException e) {}
-            beginTime = System.nanoTime();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            previousTime = System.nanoTime();
         }
+    }
+
+    public void paint(Graphics g) {
+        g.drawImage(gameWorld.getBufferedImage(), 0, 0, this);
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
 
     }
-
+    
     @Override
     public void keyPressed(KeyEvent e) {
         inputManger.processKeyPressed(e.getKeyCode());
