@@ -151,6 +151,7 @@ public class PhysicalMap extends GameObject{
     public void draw(Graphics2D g2){
         
         Camera camera = getGameWorld().camera;
+        int ok = 1;
         
         g2.setColor(Color.GRAY);
         for(int i = 0;i< phys_map.length;i++)
