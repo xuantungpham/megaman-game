@@ -1,0 +1,174 @@
+
+package com.nhom10.gameobject;
+
+import com.thach.effect.Animation;
+import com.thach.effect.CacheDataLoader;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.util.Hashtable;
+
+
+public class FinalBoss extends Human{
+    private Animation idleforward, idleback;       // các skill của boss
+    private Animation shootingforward, shootingback;
+    private Animation slideforward, slideback;
+    
+    private long startTimeForAttacked;
+    
+    private Hashtable<String, Long> timeAttack = new Hashtable<String,Long>();
+    private String[] atttackType = new String[4];         //chuỗi hoạt động của boss
+    private int attackIndex = 0;                          //chuyển hoạt động
+    private long lastAttackTime;
+          
+    public FinalBoss (float x, float y, GameWorld gameWorld){
+        super(x, y, 110, 150, 0.1f, 100, gameWorld);
+        idleback = CacheDataLoader.getInstance().getAnimation("boss_idle");
+        idleforward = CacheDataLoader.getInstance().getAnimation("boss_idle");
+        idleforward.flipAllImage();
+        
+        shootingback = CacheDataLoader.getInstance().getAnimation("boss_shooting");
+        shootingforward = CacheDataLoader.getInstance().getAnimation("boss_shooting");
+        shootingforward.flipAllImage();
+        
+        slideback = CacheDataLoader.getInstance().getAnimation("boss_slide");
+        slideback = CacheDataLoader.getInstance().getAnimation("boss_slide");
+        slideback.flipAllImage();
+        
+        setTimeForNoBehurt(500*1000000);
+        setDamage(10);
+        
+        attackType[0] = "NONE";
+        attackType[1] = "shooting";
+        attackType[2] = "NONE";
+        attackType[3] = "slide";
+        
+        timeAttack.put("NONE", new Long(2000));
+        timeAttack.put("shooting", new Long(500));
+        timeAttack.put("slide", new Long(5000));
+    }
+    
+    public void Update(){
+        super.Update();
+        
+        if(getGameWorld().megaman.getPosX() > getPosX())  //boss luôn quay mặt vào nhân vật
+            setDirection(RIGHT_DIR);
+        else setDIrection(LEFT_DIR);
+        
+        if(startTimeForAttacked == 0)              //khởi tạo thời gian bắt đầu hoạt động attack
+            startTimeForAttacked = System.currentTimeMillis();
+        else if(System.currentTimeMillis() - startTimeForAttacked > 300){
+            attack();
+            startTimeForAttacked = System.currentTimeMillis();
+        }
+        
+        if(!attackType[attackType].equals("NONE")){
+            if(attackType[attackType]equals("shooting")){
+            
+            Bullet bullet = new RocketBullet(getPosX(), getPosY() - 50, getGameWOrld());
+            if(getDirection() == LEFT_DIR) bullet.setSpeedX(-4);
+            else bullet.setSpeedX(4);
+            bullet.setTeamType(getTeamType());
+            getGameWorld().bulletManager.addObject(bullet);
+        }else if(attackType[attackType].equals("slide")){
+                if(etGameWorld().physicalMap.haveCollisionWithLeftWall(getBoundForCollisionWithMap()) != null)
+                    setSpeedX(5);
+                if(etGameWorld().physicalMap.haveCollisionWithLeftWall(getBoundForCollisionWithMap()) != null)
+                    setSpeedX(-5);    
+                
+                setPosX(getPosX() + getSpeedX());
+            }
+        }else{
+            setSpeedX(0);
+        }
+    }
+    
+    @Override
+    public void run(){
+        
+    }
+    
+    @Override
+    public void jump(){
+        setspeedY(-5);
+    }
+    
+    @Override
+    public void dick(){
+        
+    }
+    
+    @Override
+    public void standUp(){
+        
+    }
+    
+    @Override 
+    public void stopRun(){
+        
+    }
+    
+    @Override 
+    public void attack(){
+        if(System.currentTimeMillis() - lastAttackTime > timeAttack.get(attackType[attackIndex])){
+            lastAttackTime = System.currentTimeMillis();
+            attackIndex ++;
+            if(attackIndex >= attackType.length) attackIndex = 0;
+            
+            if(attackType[attaclIndex].equals("slide")){
+                if(getPosX() < getGameWorld().megaman.getPosX()) setSpeedX(5);
+                else setSpeedX(-5);
+            }
+        }
+    }
+        
+    @Override
+    public Rectangle getBoundForCollisionWithEnemy(){
+        if(attackType[attackIndex].equals("slide")){
+            Rectangle rect = getBoundForCollisionWithMap();
+            rect.y +=100;
+            rect.height -=100;
+            return rect;
+        }else
+            return getBoundForCollisionWithMap();
+        
+    }
+    @Override
+    public void draw(Graphics2D g2){
+        if(getState()== NOBEHURT  && (System.nanoTime()/10000000%2) !=1){
+            System.out.println("Plash...");
+        }else{
+            if(attackType[attackIndex].equals("NONE")){
+                if(getDirection() == RIGHT_DIR){
+                    idleforward.Update(System.nanoTime());
+                    idleforward.draw((int) (getPosX() - getGameWorld().camera.getPosX()),
+                            (int) (getPosY() - getGameWorld().camera.getPosY()), g2);
+                }else{
+                    idleback.Update(System.nanoTime());
+                    idleback.draw((int) (getPosX() - getGameWorld().camera.getPosX()),
+                            (int) (getPosY() - getGameWorld().camera.getPosY()), g2);
+                }
+            }else if(attackType[attackIndex].equals("shooting")){
+                if(getDirection() == RIGHT_DIR){
+                    shootingforward.Update(System.nanoTime());
+                    shootingforward.draw((int) (getPosX() - getGameWorld().camera.getPosX()),
+                            (int) (getPosY() - getGameWorld().camera.getPosY()), g2);
+                }else{
+                    shootingback.Update(System.nanoTime());
+                    shootingback.draw((int) (getPosX() - getGameWorld().camera.getPosX()),
+                            (int) (getPosY() - getGameWorld().camera.getPosY()), g2);
+                }
+            }else if(attackaType[attackIndex].equals("slide")){
+                if(getSpeedX() > 0){
+                    sildeforward.Update(System.nanoTime());
+                    sildeforward.draw((int) (getPosX() - getGameWorld().camera.getPosX()),
+                            (int) (getPosY() - getGameWorld().camera.getPosY()), g2);
+                }else{
+                    sildeback.Update(System.nanoTime());
+                    sildeback.draw((int) (getPosX() - getGameWorld().camera.getPosX()),
+                            (int) (getPosY() - getGameWorld().camera.getPosY()), g2);
+                }
+            }
+        }
+    }
+    
+}
